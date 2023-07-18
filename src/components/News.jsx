@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import NewsItem from "./NewsItem";
+import Spinner from './Spinner'
 export class News extends Component {
   articles = [
     {
@@ -593,7 +594,6 @@ export class News extends Component {
       articles: [],
       loading: false,
       page: 1,
-      isDisableNext:false
     };
   }
 
@@ -609,7 +609,6 @@ export class News extends Component {
   handleNext = async () => {
     if (this.state.page + 1 > Math.ceil(this.state.totalResults / 20)) {
       this.setState({
-        isDisableNext: true,
       })
     } else {
       let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=a961b995db8d41d4a74941694528bab1&page=${
@@ -641,7 +640,8 @@ export class News extends Component {
   render() {
     return (
       <div className="container my-3">
-        <h2>NewsMonkey - Top Headlines</h2>
+        <h2 className="text-center">NewsMonkey - Top Headlines</h2>
+       {this.state.loading&& <Spinner/>}
         <div className="row">
           {this.state.articles.map((element) => {
             return (
@@ -664,7 +664,7 @@ export class News extends Component {
           >
             &larr; Previous
           </button>
-          <button className="btn btn-dark" onClick={this.handleNext} disabled={this.isDisableNext} >
+          <button className="btn btn-dark" onClick={this.handleNext} disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / 20)} >
             Next &rarr;
           </button>
         </div>
