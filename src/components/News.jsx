@@ -599,7 +599,7 @@ export class News extends Component {
 
   async componentDidMount() {
     let url =
-      "https://newsapi.org/v2/top-headlines?country=us&apiKey=a961b995db8d41d4a74941694528bab1&page=1&pageSize=20";
+      `https://newsapi.org/v2/top-headlines?country=us&apiKey=a961b995db8d41d4a74941694528bab1&page=1&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json();
     console.log(parsedData);
@@ -607,27 +607,26 @@ export class News extends Component {
   }
 
   handleNext = async () => {
-    if (this.state.page + 1 > Math.ceil(this.state.totalResults / 20)) {
-      this.setState({
-      })
-    } else {
+    if (!(this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize))) {
       let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=a961b995db8d41d4a74941694528bab1&page=${
         this.state.page + 1
-      }&pageSize=20`;
+      }&pageSize=${this.props.pageSize}`;
+      this.setState({loading:true})
       let data = await fetch(url);
       let parsedData = await data.json();
-      console.log(parsedData);
 
       this.setState({
         articles: parsedData.articles,
         page: this.state.page + 1,
+        loading:false
       });
     }
   };
   handlePrev = async () => {
     let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=a961b995db8d41d4a74941694528bab1&page=${
       this.state.page - 1
-    }&pageSize=20`;
+    }&pageSize=${this.props.pageSize}`;
+    this.setState({loading:true})
     let data = await fetch(url);
     let parsedData = await data.json();
     console.log(parsedData);
@@ -635,13 +634,14 @@ export class News extends Component {
     this.setState({
       articles: parsedData.articles,
       page: this.state.page - 1,
+      loading:false
     });
   };
   render() {
     return (
       <div className="container my-3">
         <h2 className="text-center">NewsMonkey - Top Headlines</h2>
-       {this.state.loading&& <Spinner/>}
+       {this.props.loading && <Spinner/>}
         <div className="row">
           {this.state.articles.map((element) => {
             return (
@@ -664,7 +664,7 @@ export class News extends Component {
           >
             &larr; Previous
           </button>
-          <button className="btn btn-dark" onClick={this.handleNext} disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / 20)} >
+          <button className="btn btn-dark" onClick={this.handleNext} disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize)} >
             Next &rarr;
           </button>
         </div>
